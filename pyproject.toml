@@ -19,5 +19,10 @@ raw-options = { version_scheme = "no-guess-dev" }
 [project.scripts]
 pyautossh = "pyautossh:main"
 
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.14.1",
+]
+
 [tool.ruff.lint]
 extend-select = ["I"]

@@ -11,9 +11,7 @@ terminal multiplexers like `screen` or `tmux` on remote hosts.
 
 - Automatic reconnection on connection loss
 - Compatible with existing SSH configurations
-- Seamless integration with terminal multiplexers
-- Lightweight with minimal dependencies
-- Support for all standard SSH options
+- Minimal dependencies
 
 ## Prerequisites
 

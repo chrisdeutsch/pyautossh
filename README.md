@@ -39,6 +39,9 @@ pip install .
 ### Basic Usage
 
 ```bash
+pyautossh <args forwarded to ssh>
+
+# For example
 pyautossh -t user@hostname tmux new -A -s session_name
 ```
 

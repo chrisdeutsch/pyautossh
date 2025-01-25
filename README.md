@@ -63,11 +63,15 @@ Then simply connect using:
 pyautossh hostname-tmux
 ```
 
+The parameters
+
 - `ServerAliveInterval`: Time interval (in seconds) for sending keep-alive
   messages
 - `ServerAliveCountMax`: Number of keep-alive messages that can be lost before
   disconnecting
 - `RequestTTY`: Forces TTY allocation (required for interactive sessions)
+
+can be configured depending on how aggressively you want to reconnect.
 
 ## Tips
 

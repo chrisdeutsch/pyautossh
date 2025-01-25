@@ -22,7 +22,7 @@ terminal multiplexers like `screen` or `tmux` on remote hosts.
 ## Installation
 
 ```bash
-# Via pip (recommended)
+# Via pip (or pipx / uvx)
 pip install git+https://github.com/chrisdeutsch/pyautossh
 pip install pyautossh
 

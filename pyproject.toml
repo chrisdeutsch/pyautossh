@@ -22,6 +22,7 @@ pyautossh = "pyautossh:main"
 [project.optional-dependencies]
 dev = [
     "mypy>=1.14.1",
+    "pytest>=8.3.4",
 ]
 
 [tool.ruff.lint]

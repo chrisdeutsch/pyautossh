@@ -1,6 +1,6 @@
 [project]
 name = "pyautossh"
-description = "Add your description here"
+description = "Automatically reconnect SSH sessions"
 readme = "README.md"
 requires-python = ">=3.9"
 dynamic = ["version"]

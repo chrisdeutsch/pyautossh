@@ -25,10 +25,11 @@ terminal multiplexers like `screen` or `tmux` on remote hosts.
 
 ```bash
 # Via pip (recommended)
+pip install git+https://github.com/chrisdeutsch/pyautossh
 pip install pyautossh
 
 # From source
-git clone https://github.com/yourusername/pyautossh.git
+git clone https://github.com/chrisdeutsch/pyautossh
 cd pyautossh
 pip install .
 ```

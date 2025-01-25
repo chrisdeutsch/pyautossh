@@ -1,0 +1,21 @@
+[project]
+name = "pyautossh"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dynamic = ["version"]
+dependencies = []
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+raw-options = { version_scheme = "no-guess-dev" }
+
+[project.scripts]
+pyautossh = "pyautossh:main"
+
+[tool.ruff.lint]
+extend-select = ["I"]

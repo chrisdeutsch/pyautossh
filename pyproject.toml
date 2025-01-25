@@ -12,3 +12,6 @@ build-backend = "hatchling.build"
 
 [project.scripts]
 pyautossh = "pyautossh:main"
+
+[tool.ruff.lint]
+extend-select = ["I"]

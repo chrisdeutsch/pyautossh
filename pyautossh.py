@@ -1,6 +1,7 @@
 import argparse
 import subprocess
 import sys
+import time
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -16,6 +17,7 @@ def connect(ssh_args: list[str]):
         ssh_proc = subprocess.run(ssh_cmd)
         if ssh_proc.returncode == 0:
             return
+        time.sleep(1)
 
 
 if __name__ == "__main__":

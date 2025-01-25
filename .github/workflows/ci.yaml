@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ $default-branch ]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+    - name: Install pre-commit
+      run: |
+        pip install pre-commit==4.1.0
+    - name: Run pre-commit
+      run: |
+        pre-commit run --all-files

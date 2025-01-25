@@ -13,7 +13,7 @@ def main(argv: list[str] | None = None) -> int:
     sys.exit(returncode)
 
 
-def connect(ssh_args: list[str], reconnect_delay: float = 1.0):
+def connect(ssh_args: list[str], reconnect_delay: float = 1.0) -> None:
     ssh_cmd = ["ssh"] + ssh_args
 
     while True:

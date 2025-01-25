@@ -75,10 +75,11 @@ can be configured depending on how aggressively you want to reconnect.
 
 ## Tips
 
-1. Always use key-based authentication
-2. Configure SSH agent for convenient key management
+1. Use key-based authentication
+2. Configure SSH agent for passwordless authentication with
+   passphrase-protected keys
 3. Adjust keep-alive settings based on how aggressive you want to reconnect
-4. Use terminal multiplexers for session persistence
+4. Use terminal multiplexers (e.g. `tmux` or `screen`) for session persistence
 
 ## Related Projects
 

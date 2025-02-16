@@ -82,5 +82,5 @@ can be configured depending on how aggressively you want to reconnect.
 
 ## Related Projects
 
-- [autossh](https://github.com/Autossh/autossh) - The original AutoSSH by Carson
+- [autossh](https://www.harding.motd.ca/autossh/) - The original AutoSSH by Carson
   Harding

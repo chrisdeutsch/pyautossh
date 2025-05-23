@@ -69,6 +69,36 @@ def _find_ssh_executable() -> str:
     raise SSHClientNotFound("SSH client executable not found")
 
 
+def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
+    """Attempt to establish an SSH connection.
+    
+    Parameters
+    ----------
+    ssh_exec : str
+        Path to the SSH executable
+    ssh_args : list[str]
+        Arguments to pass to the SSH command
+        
+    Returns
+    -------
+    bool
+        True if connection was successful and terminated normally,
+        False if connection failed or is still active
+    """
+    with subprocess.Popen([ssh_exec] + ssh_args) as ssh_proc:
+        try:
+            ssh_proc.wait(timeout=30.0)
+        except subprocess.TimeoutExpired:
+            # Connection is OK
+            return False  # Not a terminal success, but connection is active
+
+    if ssh_proc.returncode == 0:
+        return True
+
+    logger.debug(f"ssh exited with code {ssh_proc.returncode}")
+    return False
+
+
 def connect_ssh(
     ssh_args: list[str],
     max_connection_attempts: int | None = 10,
@@ -80,17 +110,10 @@ def connect_ssh(
     while max_connection_attempts is None or num_attempt < max_connection_attempts:
         num_attempt += 1
 
-        with subprocess.Popen([ssh_exec] + ssh_args) as ssh_proc:
-            try:
-                ssh_proc.wait(timeout=30.0)
-            except subprocess.TimeoutExpired:
-                # Connection is OK
-                num_attempt = 0
-
-        if ssh_proc.returncode == 0:
+        if _attempt_connection(ssh_exec, ssh_args):
             return
 
-        logger.debug(f"ssh exited with code {ssh_proc.returncode}")
+        logger.debug(f"Waiting {reconnect_delay}s before reconnecting...")
         time.sleep(reconnect_delay)
         logger.debug("Reconnecting...")
 

@@ -63,10 +63,6 @@ def setup_logging(verbose: bool = False) -> None:
 def _find_ssh_executable() -> str:
     """Find the SSH executable in the system PATH.
 
-    Parameters
-    ----------
-    None
-
     Returns
     -------
     str
@@ -137,7 +133,7 @@ def connect_ssh(
     SSHConnectionError
         If the maximum number of connection attempts is reached
     SSHClientNotFound
-        If the SSH executable is not found in the PATH
+        If the SSH executable is not found
     """
     ssh_exec = _find_ssh_executable()
 

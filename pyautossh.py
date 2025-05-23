@@ -117,7 +117,7 @@ def connect_ssh(
     reconnect_delay: float = 1.0,
 ) -> None:
     """Establish and maintain an SSH connection with automatic reconnection.
-    
+
     Parameters
     ----------
     ssh_args : list[str]
@@ -127,7 +127,7 @@ def connect_ssh(
         If None, will try indefinitely. Default is 10.
     reconnect_delay : float, optional
         Time in seconds to wait between reconnection attempts. Default is 1.0.
-        
+
     Raises
     ------
     SSHConnectionError

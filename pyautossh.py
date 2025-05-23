@@ -101,8 +101,8 @@ def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
         try:
             ssh_proc.wait(timeout=30.0)
         except subprocess.TimeoutExpired:
-            # Connection is OK
-            return False  # Not a terminal success, but connection is active
+            # Connection is still active. Not a terminal success.
+            return False
 
     if ssh_proc.returncode == 0:
         return True

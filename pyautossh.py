@@ -62,16 +62,16 @@ def setup_logging(verbose: bool = False) -> None:
 
 def _find_ssh_executable() -> str:
     """Find the SSH executable in the system PATH.
-    
+
     Parameters
     ----------
     None
-    
+
     Returns
     -------
     str
         Path to the SSH executable
-        
+
     Raises
     ------
     SSHClientNotFound
@@ -87,14 +87,14 @@ def _find_ssh_executable() -> str:
 
 def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
     """Attempt to establish an SSH connection.
-    
+
     Parameters
     ----------
     ssh_exec : str
         Path to the SSH executable
     ssh_args : list[str]
         Arguments to pass to the SSH command
-        
+
     Returns
     -------
     bool

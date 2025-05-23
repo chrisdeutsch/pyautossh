@@ -65,6 +65,7 @@ def _find_ssh_executable() -> str:
     if ssh_exec:
         logger.debug(f"ssh executable: {ssh_exec}")
         return ssh_exec
+
     raise SSHClientNotFound("SSH client executable not found")
 
 

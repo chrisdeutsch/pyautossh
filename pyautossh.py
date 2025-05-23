@@ -120,6 +120,25 @@ def connect_ssh(
     max_connection_attempts: int | None = 10,
     reconnect_delay: float = 1.0,
 ) -> None:
+    """Establish and maintain an SSH connection with automatic reconnection.
+    
+    Parameters
+    ----------
+    ssh_args : list[str]
+        Arguments to pass to the SSH command
+    max_connection_attempts : int or None, optional
+        Maximum number of consecutive failed connection attempts before giving up.
+        If None, will try indefinitely. Default is 10.
+    reconnect_delay : float, optional
+        Time in seconds to wait between reconnection attempts. Default is 1.0.
+        
+    Raises
+    ------
+    SSHConnectionError
+        If the maximum number of connection attempts is reached
+    SSHClientNotFound
+        If the SSH executable is not found in the PATH
+    """
     ssh_exec = _find_ssh_executable()
 
     num_attempt = 0

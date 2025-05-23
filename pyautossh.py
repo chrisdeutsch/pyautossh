@@ -60,16 +60,20 @@ def setup_logging(verbose: bool = False) -> None:
     )
 
 
+def _find_ssh_executable() -> str:
+    ssh_exec = shutil.which("ssh")
+    if ssh_exec:
+        logger.debug(f"ssh executable: {ssh_exec}")
+        return ssh_exec
+    raise SSHClientNotFound("SSH client executable not found")
+
+
 def connect_ssh(
     ssh_args: list[str],
     max_connection_attempts: int | None = 10,
     reconnect_delay: float = 1.0,
 ) -> None:
-    ssh_exec = shutil.which("ssh")
-    if ssh_exec:
-        logger.debug(f"ssh executable: {ssh_exec}")
-    else:
-        raise SSHClientNotFound("SSH client executable not found")
+    ssh_exec = _find_ssh_executable()
 
     num_attempt = 0
     while max_connection_attempts is None or num_attempt < max_connection_attempts:

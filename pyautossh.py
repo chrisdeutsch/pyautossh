@@ -61,6 +61,22 @@ def setup_logging(verbose: bool = False) -> None:
 
 
 def _find_ssh_executable() -> str:
+    """Find the SSH executable in the system PATH.
+    
+    Parameters
+    ----------
+    None
+    
+    Returns
+    -------
+    str
+        Path to the SSH executable
+        
+    Raises
+    ------
+    SSHClientNotFound
+        If the SSH executable is not found in the PATH
+    """
     ssh_exec = shutil.which("ssh")
     if ssh_exec:
         logger.debug(f"ssh executable: {ssh_exec}")

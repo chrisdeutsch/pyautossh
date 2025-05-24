@@ -8,7 +8,7 @@ from pyautossh.exceptions import SSHClientNotFound, SSHConnectionError
 logger = logging.getLogger(__name__)
 
 
-class SSHAutoConnector:
+class SSHSessionManager:
     """
     Manages an SSH connection with automatic reconnection capabilities.
     """

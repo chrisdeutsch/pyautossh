@@ -1,6 +1,6 @@
 # PyAutoSSH
 
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A Python tool that automatically reconnects SSH sessions after connection
@@ -15,7 +15,7 @@ terminal multiplexers like `screen` or `tmux` on remote hosts.
 
 ## Prerequisites
 
-- Python 3.9 or newer
+- Python 3.10 or newer
 - SSH client (`ssh` command available in PATH)
 - Configured SSH key-based authentication (recommended)
 

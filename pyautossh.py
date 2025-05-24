@@ -61,7 +61,8 @@ def setup_logging(verbose: bool = False) -> None:
 
 
 def _find_ssh_executable() -> str:
-    """Find the SSH executable in the system PATH.
+    """
+    Find the SSH executable on the PATH.
 
     Returns
     -------
@@ -82,14 +83,15 @@ def _find_ssh_executable() -> str:
 
 
 def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
-    """Attempt to establish an SSH connection.
+    """
+    Attempt to establish an SSH connection.
 
     Parameters
     ----------
     ssh_exec : str
         Path to the SSH executable
     ssh_args : list[str]
-        Arguments to pass to the SSH command
+        Arguments forwarded to the SSH command
 
     Returns
     -------
@@ -116,7 +118,8 @@ def connect_ssh(
     max_connection_attempts: int | None = 10,
     reconnect_delay: float = 1.0,
 ) -> None:
-    """Establish and maintain an SSH connection with automatic reconnection.
+    """
+    Establish and maintain an SSH connection with automatic reconnection.
 
     Parameters
     ----------

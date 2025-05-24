@@ -35,7 +35,7 @@ def test_connect_successful_first_attempt():
     # Configure dummy to succeed on the first attempt
     manager = DummySSHSessionManager(attempt_outcomes=[True])
 
-    manager.connect(ssh_args_test, max_connection_attempts=3, reconnect_delay=0.001)
+    manager.connect(ssh_args_test, max_connection_attempts=3, reconnect_delay=0.0)
 
     assert manager.find_ssh_executable_call_count == 1
     assert len(manager.attempt_connection_log) == 1

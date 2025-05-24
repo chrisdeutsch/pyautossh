@@ -25,7 +25,7 @@ def main(argv: list[str] | None = None) -> int:
 
     Parameters
     ----------
-    argv : list[str] | None
+    argv: list[str] | None
         Command line arguments. If None, sys.argv[1:] is used.
 
     Returns
@@ -61,7 +61,7 @@ def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[
 
     Parameters
     ----------
-    argv : list[str] | None
+    argv: list[str] | None
         Command line arguments. If None, sys.argv[1:] is used.
 
     Returns
@@ -103,7 +103,7 @@ def setup_logging(verbose: bool = False) -> None:
 
     Parameters
     ----------
-    verbose : bool
+    verbose: bool
         If True, sets logging level to DEBUG; otherwise INFO.
     """
 

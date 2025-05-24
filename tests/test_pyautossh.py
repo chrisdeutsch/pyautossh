@@ -1,15 +1,15 @@
-from typing import Callable, List
+from typing import List
 
 import pytest
 
 from pyautossh.exceptions import SSHConnectionError
-from pyautossh.pyautossh import SSHSessionManager
+from pyautossh.pyautossh import ConnectionAttempter, SSHSessionManager
 
 
 # Factory for creating a mock connection attempter
 def make_mock_attempt_connection(
     attempt_outcomes: List[bool],
-) -> Callable[[str, List[str], float], bool]:
+) -> ConnectionAttempter:
     """
     Creates a mock connection_attempter function.
 
@@ -22,7 +22,7 @@ def make_mock_attempt_connection(
 
     Returns
     -------
-    Callable[[str, list[str], float], bool]
+    ConnectionAttempter
         A mock function suitable for use as a connection_attempter.
     """
     # Use a list for `outcomes_mut` to allow modification in the closure

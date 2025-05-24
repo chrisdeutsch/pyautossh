@@ -2,7 +2,7 @@ import logging
 import shutil
 import subprocess
 import time
-from typing import Callable
+from typing import Callable, Protocol
 
 from pyautossh.exceptions import SSHClientNotFound, SSHConnectionError
 
@@ -72,6 +72,21 @@ def default_attempt_connection(
     return False
 
 
+class ConnectionAttempter(Protocol):
+    """
+    Protocol for a function that attempts an SSH connection.
+    """
+
+    def __call__(
+        self,
+        ssh_exec: str,
+        ssh_args: list[str],
+        *,
+        process_timeout_seconds: float = 30.0,
+    ) -> bool:
+        ...
+
+
 class SSHSessionManager:
     """
     Manages an SSH connection with automatic reconnection capabilities.
@@ -81,9 +96,7 @@ class SSHSessionManager:
     def __init__(
         self,
         ssh_finder: Callable[[], str] = default_find_ssh_executable,
-        connection_attempter: Callable[
-            [str, list[str], float], bool
-        ] = default_attempt_connection,
+        connection_attempter: ConnectionAttempter = default_attempt_connection,
     ):
         """
         Initializes the SSHSessionManager.
@@ -93,10 +106,11 @@ class SSHSessionManager:
         ssh_finder : Callable[[], str], optional
             A function that returns the path to the SSH executable.
             Defaults to `default_find_ssh_executable`.
-        connection_attempter : Callable[[str, list[str], float], bool], optional
+        connection_attempter : ConnectionAttempter, optional
             A function that attempts an SSH connection.
-            It should take (ssh_exec_path, ssh_args, process_timeout_seconds)
-            and return True for a successful terminal connection, False otherwise.
+            It should take `ssh_exec` (str), `ssh_args` (list[str]),
+            and a keyword-only `process_timeout_seconds` (float),
+            returning True for a successful terminal connection, False otherwise.
             Defaults to `default_attempt_connection`.
         """
         self._find_ssh_executable_func = ssh_finder

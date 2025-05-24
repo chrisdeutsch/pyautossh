@@ -5,6 +5,7 @@ from typing import Callable, Protocol
 
 from pyautossh.exceptions import SSHClientNotFound, SSHConnectionError
 from pyautossh.retry_policy import RetryPolicy
+from pyautossh.process_invoker import ProcessInvoker, SubprocessInvoker, CommandResult
 
 logger = logging.getLogger(__name__)
 
@@ -37,38 +38,42 @@ def default_attempt_connection(
     ssh_args: list[str],
     *,
     process_timeout_seconds: float = 30.0,
+    invoker: ProcessInvoker = SubprocessInvoker(),
 ) -> bool:
     """
-    Attempt an SSH connection using subprocess and determine if it completed successfully.
+    Attempt an SSH connection using a ProcessInvoker to manage the subprocess.
 
     Parameters
     ----------
-    ssh_exec: str
+    ssh_exec : str
         Path to the SSH executable
-    ssh_args: list[str]
+    ssh_args : list[str]
         Arguments forwarded to the SSH command
-    process_timeout_seconds: float
-        Time to wait for SSH process to terminate; if it doesn't,
-        the connection is considered active (not a terminal success).
-        Default is 30.0.
+    process_timeout_seconds : float
+        Time to wait for SSH process to terminate; if it doesn't within
+        the timeout, it is considered an active connection (not terminal
+        success). Default is 30.0.
+    invoker : ProcessInvoker
+        Abstraction for running the subprocess; default wraps subprocess.
 
     Returns
     -------
     bool
-        True if SSH process completed with exit code 0, False if it is still
-        running or exited with an error.
+        True if SSH process completed with exit code 0; False otherwise.
+        A running process after timeout counts as an unsuccessful terminal
+        outcome.
     """
-    with subprocess.Popen([ssh_exec] + ssh_args) as ssh_proc:
-        try:
-            ssh_proc.wait(timeout=process_timeout_seconds)
-        except subprocess.TimeoutExpired:
-            # Connection is still active. Not a terminal success.
-            return False
+    command = [ssh_exec] + ssh_args
+    result: CommandResult = invoker.invoke(command, timeout=process_timeout_seconds)
 
-    if ssh_proc.returncode == 0:
+    if result.timed_out:
+        # Connection is still active. Not a terminal success.
+        return False
+
+    if result.returncode == 0:
         return True
 
-    logger.debug(f"ssh exited with code {ssh_proc.returncode}")
+    logger.debug(f"ssh exited with code {result.returncode}")
     return False
 
 

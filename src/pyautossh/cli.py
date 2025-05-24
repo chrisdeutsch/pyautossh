@@ -2,7 +2,7 @@ import argparse
 import logging
 
 from pyautossh.exceptions import SSHClientNotFound, SSHConnectionError
-from pyautossh.pyautossh import connect_ssh
+from pyautossh.pyautossh import SSHSessionManager
 
 logger = logging.getLogger(__name__)
 
@@ -34,8 +34,9 @@ def main(argv: list[str] | None = None) -> int:
         return 255
 
     try:
-        connect_ssh(
-            ssh_args,
+        manager = SSHSessionManager()
+        manager.connect(
+            ssh_args=ssh_args,
             max_connection_attempts=args.max_connection_attempts,
             reconnect_delay=args.reconnect_delay,
         )

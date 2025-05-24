@@ -1,107 +1,103 @@
 import logging
 import shutil
-import subprocess
-import time
+from typing import Callable
 
 from pyautossh.exceptions import SSHClientNotFound, SSHConnectionError
+from pyautossh.process_invoker import SubprocessInvoker
+from pyautossh.retry_policy import RetryPolicy
 
 logger = logging.getLogger(__name__)
 
+SSHArgs = list[str]
+ConnectionAttempter = Callable[[str, SSHArgs], bool]
 
-def _find_ssh_executable() -> str:
+
+def default_find_ssh_executable() -> str:
     """
-    Find the SSH executable on the PATH.
+    Locate the SSH client on the system PATH.
 
     Returns
     -------
     str
-        Path to the SSH executable
+        Absolute path to the SSH executable.
 
     Raises
     ------
     SSHClientNotFound
-        If the SSH executable is not found in the PATH
+        If the SSH executable cannot be found.
     """
-
-    ssh_exec = shutil.which("ssh")
-    if ssh_exec:
-        logger.debug(f"ssh executable: {ssh_exec}")
-        return ssh_exec
-
+    path = shutil.which("ssh")
+    if path:
+        logger.debug("SSH executable found: %s", path)
+        return path
     raise SSHClientNotFound("SSH client executable not found")
 
 
-def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
+def default_attempt_connection(
+    ssh_exec: str,
+    ssh_args: SSHArgs,
+    process_timeout_seconds: float = 30.0,
+) -> bool:
     """
-    Attempt an SSH connection and determine if it completed successfully.
+    Try to invoke SSH and return True only if it exits cleanly.
 
-    Parameters
-    ----------
-    ssh_exec: str
-        Path to the SSH executable
-    ssh_args: list[str]
-        Arguments forwarded to the SSH command
-
-    Returns
-    -------
-    bool
-        True if SSH process completed with exit code 0, False if it is still
-        running or exited with an error.
+    A still-running process at timeout is treated as an active session
+    (not a terminal success), so this returns False in that case.
     """
+    invoker = SubprocessInvoker()
+    command = [ssh_exec] + ssh_args
+    result = invoker.invoke(command, timeout=process_timeout_seconds)
 
-    # Time to wait for SSH process to terminate; if it doesn't, connection is considered active
-    process_timeout_seconds = 30.0
-    with subprocess.Popen([ssh_exec] + ssh_args) as ssh_proc:
-        try:
-            ssh_proc.wait(timeout=process_timeout_seconds)
-        except subprocess.TimeoutExpired:
-            # Connection is still active. Not a terminal success.
-            return False
-
-    if ssh_proc.returncode == 0:
+    if result.timed_out:
+        return False
+    if result.returncode == 0:
         return True
 
-    logger.debug(f"ssh exited with code {ssh_proc.returncode}")
+    logger.debug("SSH exited with code %s", result.returncode)
     return False
 
 
-def connect_ssh(
-    ssh_args: list[str],
-    max_connection_attempts: int | None = None,
-    reconnect_delay: float = 1.0,
-) -> None:
+class SSHSessionManager:
     """
-    Establish and maintain an SSH connection with automatic reconnection.
-
-    Parameters
-    ----------
-    ssh_args: list[str]
-        Arguments to pass to the SSH command
-    max_connection_attempts: int | None
-        Maximum number of consecutive failed connection attempts before giving up.
-        If None, will try indefinitely. Default is None.
-    reconnect_delay: float
-        Time in seconds to wait between reconnection attempts. Default is 1.0.
-
-    Raises
-    ------
-    SSHConnectionError
-        If the maximum number of connection attempts is reached
-    SSHClientNotFound
-        If the SSH executable is not found
+    Manage an SSH session with automatic retry on failure.
     """
 
-    ssh_exec = _find_ssh_executable()
+    def __init__(
+        self,
+        ssh_finder: Callable[[], str] = default_find_ssh_executable,
+        connection_attempter: ConnectionAttempter = default_attempt_connection,
+    ) -> None:
+        self._ssh_finder = ssh_finder
+        self._conn_attempt = connection_attempter
 
-    num_attempt = 0
-    while max_connection_attempts is None or num_attempt < max_connection_attempts:
-        num_attempt += 1
+    def connect(
+        self,
+        ssh_args: SSHArgs,
+        max_connection_attempts: int | None = None,
+        reconnect_delay: float = 1.0,
+    ) -> None:
+        """
+        Open an SSH session, retrying on failure up to the given limit.
 
-        if _attempt_connection(ssh_exec, ssh_args):
-            return
+        Parameters
+        ----------
+        ssh_args
+            Arguments to pass to SSH.
+        max_connection_attempts
+            Max consecutive failures before giving up (None = infinite).
+        reconnect_delay
+            Seconds to wait between retries.
 
-        logger.debug(f"Waiting {reconnect_delay}s before reconnecting...")
-        time.sleep(reconnect_delay)
-        logger.debug("Reconnecting...")
+        Raises
+        ------
+        SSHConnectionError
+            If the retry limit is reached.
+        SSHClientNotFound
+            If no SSH executable is found.
+        """
+        ssh_exec = self._ssh_finder()
+        retry = RetryPolicy(max_attempts=max_connection_attempts, delay=reconnect_delay)
+        ok = retry.call(lambda: self._conn_attempt(ssh_exec, ssh_args))
 
-    raise SSHConnectionError("Exceeded maximum number of connection attempts")
+        if not ok:
+            raise SSHConnectionError("Exceeded maximum number of connection attempts")

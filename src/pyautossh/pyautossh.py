@@ -8,100 +8,104 @@ from pyautossh.exceptions import SSHClientNotFound, SSHConnectionError
 logger = logging.getLogger(__name__)
 
 
-def _find_ssh_executable() -> str:
+class SSHAutoConnector:
     """
-    Find the SSH executable on the PATH.
-
-    Returns
-    -------
-    str
-        Path to the SSH executable
-
-    Raises
-    ------
-    SSHClientNotFound
-        If the SSH executable is not found in the PATH
+    Manages an SSH connection with automatic reconnection capabilities.
     """
 
-    ssh_exec = shutil.which("ssh")
-    if ssh_exec:
-        logger.debug(f"ssh executable: {ssh_exec}")
-        return ssh_exec
+    def _find_ssh_executable(self) -> str:
+        """
+        Find the SSH executable on the PATH.
 
-    raise SSHClientNotFound("SSH client executable not found")
+        Returns
+        -------
+        str
+            Path to the SSH executable
 
+        Raises
+        ------
+        SSHClientNotFound
+            If the SSH executable is not found in the PATH
+        """
 
-def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
-    """
-    Attempt an SSH connection and determine if it completed successfully.
+        ssh_exec = shutil.which("ssh")
+        if ssh_exec:
+            logger.debug(f"ssh executable: {ssh_exec}")
+            return ssh_exec
 
-    Parameters
-    ----------
-    ssh_exec: str
-        Path to the SSH executable
-    ssh_args: list[str]
-        Arguments forwarded to the SSH command
+        raise SSHClientNotFound("SSH client executable not found")
 
-    Returns
-    -------
-    bool
-        True if SSH process completed with exit code 0, False if it is still
-        running or exited with an error.
-    """
+    def _attempt_connection(self, ssh_exec: str, ssh_args: list[str]) -> bool:
+        """
+        Attempt an SSH connection and determine if it completed successfully.
 
-    # Time to wait for SSH process to terminate; if it doesn't, connection is considered active
-    process_timeout_seconds = 30.0
-    with subprocess.Popen([ssh_exec] + ssh_args) as ssh_proc:
-        try:
-            ssh_proc.wait(timeout=process_timeout_seconds)
-        except subprocess.TimeoutExpired:
-            # Connection is still active. Not a terminal success.
-            return False
+        Parameters
+        ----------
+        ssh_exec: str
+            Path to the SSH executable
+        ssh_args: list[str]
+            Arguments forwarded to the SSH command
 
-    if ssh_proc.returncode == 0:
-        return True
+        Returns
+        -------
+        bool
+            True if SSH process completed with exit code 0, False if it is still
+            running or exited with an error.
+        """
 
-    logger.debug(f"ssh exited with code {ssh_proc.returncode}")
-    return False
+        # Time to wait for SSH process to terminate; if it doesn't, connection is considered active
+        process_timeout_seconds = 30.0
+        with subprocess.Popen([ssh_exec] + ssh_args) as ssh_proc:
+            try:
+                ssh_proc.wait(timeout=process_timeout_seconds)
+            except subprocess.TimeoutExpired:
+                # Connection is still active. Not a terminal success.
+                return False
 
+        if ssh_proc.returncode == 0:
+            return True
 
-def connect_ssh(
-    ssh_args: list[str],
-    max_connection_attempts: int | None = None,
-    reconnect_delay: float = 1.0,
-) -> None:
-    """
-    Establish and maintain an SSH connection with automatic reconnection.
+        logger.debug(f"ssh exited with code {ssh_proc.returncode}")
+        return False
 
-    Parameters
-    ----------
-    ssh_args: list[str]
-        Arguments to pass to the SSH command
-    max_connection_attempts: int | None
-        Maximum number of consecutive failed connection attempts before giving up.
-        If None, will try indefinitely. Default is None.
-    reconnect_delay: float
-        Time in seconds to wait between reconnection attempts. Default is 1.0.
+    def connect(
+        self,
+        ssh_args: list[str],
+        max_connection_attempts: int | None = None,
+        reconnect_delay: float = 1.0,
+    ) -> None:
+        """
+        Establish and maintain an SSH connection with automatic reconnection.
 
-    Raises
-    ------
-    SSHConnectionError
-        If the maximum number of connection attempts is reached
-    SSHClientNotFound
-        If the SSH executable is not found
-    """
+        Parameters
+        ----------
+        ssh_args: list[str]
+            Arguments to pass to the SSH command
+        max_connection_attempts: int | None
+            Maximum number of consecutive failed connection attempts before giving up.
+            If None, will try indefinitely. Default is None.
+        reconnect_delay: float
+            Time in seconds to wait between reconnection attempts. Default is 1.0.
 
-    ssh_exec = _find_ssh_executable()
+        Raises
+        ------
+        SSHConnectionError
+            If the maximum number of connection attempts is reached
+        SSHClientNotFound
+            If the SSH executable is not found
+        """
 
-    num_attempt = 0
-    while max_connection_attempts is None or num_attempt < max_connection_attempts:
-        num_attempt += 1
+        ssh_exec = self._find_ssh_executable()
 
-        if _attempt_connection(ssh_exec, ssh_args):
-            return
+        num_attempt = 0
+        while max_connection_attempts is None or num_attempt < max_connection_attempts:
+            num_attempt += 1
 
-        logger.debug(f"Waiting {reconnect_delay}s before reconnecting...")
-        time.sleep(reconnect_delay)
-        logger.debug("Reconnecting...")
+            if self._attempt_connection(ssh_exec, ssh_args):
+                return
 
-    raise SSHConnectionError("Exceeded maximum number of connection attempts")
+            logger.debug(f"Waiting {reconnect_delay}s before reconnecting...")
+            time.sleep(reconnect_delay)
+            logger.debug("Reconnecting...")
+
+        raise SSHConnectionError("Exceeded maximum number of connection attempts")

@@ -19,6 +19,7 @@ jobs:
     - name: Run pre-commit
       run: |
         pre-commit run --all-files
+
   mypy:
     runs-on: ubuntu-latest
     steps:
@@ -32,6 +33,7 @@ jobs:
     - name: Run mypy
       run: |
         mypy .
+
   pytest:
     runs-on: ubuntu-latest
     steps:

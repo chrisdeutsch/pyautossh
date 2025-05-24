@@ -55,9 +55,6 @@ def test_connect_successful_first_attempt():
     """
     ssh_args_test = ["user@host"]
     attempt_outcomes = [True]
-    # Keep a reference to the original list to check its state later
-    # because make_mock_attempt_connection creates a copy for its closure.
-    original_attempt_outcomes_ref = attempt_outcomes
 
     mock_attempter = make_mock_attempt_connection(attempt_outcomes)
     manager = SSHSessionManager(

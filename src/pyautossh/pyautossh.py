@@ -30,6 +30,7 @@ def default_find_ssh_executable() -> str:
         return ssh_exec
     raise SSHClientNotFound("SSH client executable not found")
 
+
 # Default implementation for attempting an SSH connection
 def default_attempt_connection(
     ssh_exec: str,
@@ -80,7 +81,9 @@ class SSHSessionManager:
     def __init__(
         self,
         ssh_finder: Callable[[], str] = default_find_ssh_executable,
-        connection_attempter: Callable[[str, list[str], float], bool] = default_attempt_connection,
+        connection_attempter: Callable[
+            [str, list[str], float], bool
+        ] = default_attempt_connection,
     ):
         """
         Initializes the SSHSessionManager.

@@ -83,8 +83,7 @@ class ConnectionAttempter(Protocol):
         ssh_args: list[str],
         *,
         process_timeout_seconds: float = 30.0,
-    ) -> bool:
-        ...
+    ) -> bool: ...
 
 
 class SSHSessionManager:

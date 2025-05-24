@@ -12,3 +12,4 @@ wheels/
 # uv
 .python-version
 uv.lock
+.aider*

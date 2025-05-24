@@ -131,7 +131,7 @@ def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
 
 def connect_ssh(
     ssh_args: list[str],
-    max_connection_attempts: int | None = 10,
+    max_connection_attempts: int | None = None,
     reconnect_delay: float = 1.0,
 ) -> None:
     """
@@ -143,7 +143,7 @@ def connect_ssh(
         Arguments to pass to the SSH command
     max_connection_attempts : int or None, optional
         Maximum number of consecutive failed connection attempts before giving up.
-        If None, will try indefinitely. Default is 10.
+        If None, will try indefinitely. Default is None (retry indefinitely).
     reconnect_delay : float, optional
         Time in seconds to wait between reconnection attempts. Default is 1.0.
 

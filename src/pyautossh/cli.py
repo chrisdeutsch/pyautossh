@@ -28,6 +28,10 @@ def main(argv: list[str] | None = None) -> int:
     args, ssh_args = parse_args(argv)
     setup_logging(verbose=args.verbose)
 
+    if not ssh_args:
+        logger.error("No SSH arguments provided. Usage: pyautossh [options] [ssh_args]")
+        return 255
+
     try:
         connect_ssh(
             ssh_args,

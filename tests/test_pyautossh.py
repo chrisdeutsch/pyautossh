@@ -5,10 +5,10 @@ from pyautossh.exceptions import SSHConnectionError
 # Helper class for testing
 class DummySSHSessionManager(SSHSessionManager):
     def __init__(self, attempt_outcomes: list[bool]):
-        self.attempt_outcomes_config = list(attempt_outcomes)  # Store a copy
+        self.attempt_outcomes_config = list(attempt_outcomes)
         self.find_ssh_executable_call_count = 0
         self.attempt_connection_log = []
-        self.fake_ssh_exec_path = "/fake/ssh/path/ssh"
+        self.fake_ssh_exec_path = "/fake/ssh"
 
     def _find_ssh_executable(self) -> str:
         self.find_ssh_executable_call_count += 1

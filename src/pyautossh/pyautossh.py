@@ -100,4 +100,4 @@ class SSHSessionManager:
         ok = retry.call(lambda: self._conn_attempt(ssh_exec, ssh_args))
 
         if not ok:
-            raise SSHConnectionError("Exceeded maximum connection attempts")
+            raise SSHConnectionError("Exceeded maximum number of connection attempts")

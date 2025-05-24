@@ -11,8 +11,8 @@ def main(argv: list[str] | None = None) -> int:
     """
     Entry point for the pyautossh application.
 
-    Parses command line arguments, sets up logging, and attempts to establish
-    an SSH connection with automatic reconnection.
+    Creates the argument parser, parses command line arguments, sets up logging,
+    and attempts to establish an SSH connection with automatic reconnection.
 
     Parameters
     ----------
@@ -25,11 +25,12 @@ def main(argv: list[str] | None = None) -> int:
         Exit code: 0 for success, any non-zero value indicates an error
     """
 
-    args, ssh_args = parse_args(argv)
+    parser = create_parser()
+    args, ssh_args = parser.parse_known_args(argv)
     setup_logging(verbose=args.verbose)
 
     if not ssh_args:
-        create_parser().print_help()
+        parser.print_help()
         return 255
 
     try:
@@ -83,25 +84,6 @@ def create_parser() -> argparse.ArgumentParser:
         help="Enable verbose logging output",
     )
     return parser
-
-
-def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[str]]:
-    """
-    Parse command line arguments, separating pyautossh options from SSH options.
-
-    Parameters
-    ----------
-    argv: list[str] | None
-        Command line arguments. If None, sys.argv[1:] is used.
-
-    Returns
-    -------
-    tuple
-        (pyautossh_args, ssh_args) where pyautossh_args contains the parsed arguments
-        for this application and ssh_args is a list of arguments to forward to SSH.
-    """
-    parser = create_parser()
-    return parser.parse_known_args(argv)
 
 
 def setup_logging(verbose: bool = False) -> None:

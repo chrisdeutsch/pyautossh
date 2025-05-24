@@ -29,6 +29,7 @@ extend-select = ["I"]
 
 [tool.mypy]
 strict = true
+exclude = ["tests"]
 
 [dependency-groups]
 dev = [

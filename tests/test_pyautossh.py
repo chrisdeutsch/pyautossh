@@ -1,12 +1,15 @@
-import pytest
 from typing import Callable, List
 
-from pyautossh.exceptions import SSHConnectionError, SSHClientNotFound
+import pytest
+
+from pyautossh.exceptions import SSHConnectionError
 from pyautossh.pyautossh import SSHSessionManager
 
 
 # Factory for creating a mock connection attempter
-def make_mock_attempt_connection(attempt_outcomes: List[bool]) -> Callable[[str, List[str], float], bool]:
+def make_mock_attempt_connection(
+    attempt_outcomes: List[bool],
+) -> Callable[[str, List[str], float], bool]:
     """
     Creates a mock connection_attempter function.
 
@@ -36,6 +39,7 @@ def make_mock_attempt_connection(attempt_outcomes: List[bool]) -> Callable[[str,
                 "Not enough pre-defined outcomes for mock_attempt_connection in test setup."
             )
         return outcomes_mut.pop(0)
+
     return mock_attempt_connection_impl
 
 
@@ -53,12 +57,12 @@ def test_connect_successful_first_attempt():
     attempt_outcomes = [True]
     # Keep a reference to the original list to check its state later
     # because make_mock_attempt_connection creates a copy for its closure.
-    original_attempt_outcomes_ref = attempt_outcomes 
+    original_attempt_outcomes_ref = attempt_outcomes
 
     mock_attempter = make_mock_attempt_connection(attempt_outcomes)
     manager = SSHSessionManager(
         ssh_finder=mock_find_ssh_executable_always_succeeds,
-        connection_attempter=mock_attempter
+        connection_attempter=mock_attempter,
     )
 
     manager.connect(ssh_args_test, max_connection_attempts=3, reconnect_delay=0.0)
@@ -78,7 +82,7 @@ def test_connect_successful_first_attempt():
     # A better way: the factory can return the mutable list it uses.
     # For this iteration, let's stick to the current mock design and rely on IndexError for too many calls.
     # The test passes if `connect` returns without error.
-    pass # Implicitly, one call was made and it was True.
+    pass  # Implicitly, one call was made and it was True.
 
 
 def test_connect_fail_then_succeed():
@@ -87,11 +91,11 @@ def test_connect_fail_then_succeed():
     """
     ssh_args_test = ["user@host"]
     attempt_outcomes = [False, False, True]
-    
+
     mock_attempter = make_mock_attempt_connection(attempt_outcomes)
     manager = SSHSessionManager(
         ssh_finder=mock_find_ssh_executable_always_succeeds,
-        connection_attempter=mock_attempter
+        connection_attempter=mock_attempter,
     )
 
     manager.connect(ssh_args_test, max_connection_attempts=5, reconnect_delay=0.0)
@@ -110,7 +114,7 @@ def test_connect_reaches_attempt_limit():
     mock_attempter = make_mock_attempt_connection(attempt_outcomes)
     manager = SSHSessionManager(
         ssh_finder=mock_find_ssh_executable_always_succeeds,
-        connection_attempter=mock_attempter
+        connection_attempter=mock_attempter,
     )
 
     with pytest.raises(

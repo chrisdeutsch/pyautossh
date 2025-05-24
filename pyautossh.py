@@ -109,8 +109,8 @@ def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
     Returns
     -------
     bool
-        True if connection was successful and terminated normally,
-        False if connection failed or is still active
+        True if connection was established, completed its task, and exited with code 0.
+        False if connection failed to establish or is still active.
     """
 
     # Time to wait for SSH process to terminate; if it doesn't, connection is considered active

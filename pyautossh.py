@@ -33,6 +33,7 @@ def main(argv: list[str] | None = None) -> int:
     int
         Exit code: 0 for success, any non-zero value indicates an error
     """
+
     args, ssh_args = parse_args(argv)
     setup_logging(verbose=args.verbose)
 
@@ -105,6 +106,7 @@ def setup_logging(verbose: bool = False) -> None:
     verbose : bool
         If True, sets logging level to DEBUG; otherwise INFO.
     """
+
     level = logging.INFO if not verbose else logging.DEBUG
     logging.basicConfig(
         level=level, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"

@@ -26,3 +26,8 @@ dev = [
 
 [tool.ruff.lint]
 extend-select = ["I"]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.14.1",
+]

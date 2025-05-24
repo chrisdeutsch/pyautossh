@@ -19,3 +19,16 @@ jobs:
     - name: Run pre-commit
       run: |
         pre-commit run --all-files
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+    - name: Install dev
+      run: |
+        pip install .[dev]
+    - name: Run mypy
+      run: |
+        mypy --strict pyautossh.py

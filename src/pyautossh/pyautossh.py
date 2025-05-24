@@ -13,7 +13,8 @@ class SSHAutoConnector:
     Manages an SSH connection with automatic reconnection capabilities.
     """
 
-    def _find_ssh_executable(self) -> str:
+    @staticmethod
+    def _find_ssh_executable() -> str:
         """
         Find the SSH executable on the PATH.
 
@@ -35,7 +36,8 @@ class SSHAutoConnector:
 
         raise SSHClientNotFound("SSH client executable not found")
 
-    def _attempt_connection(self, ssh_exec: str, ssh_args: list[str]) -> bool:
+    @staticmethod
+    def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
         """
         Attempt an SSH connection and determine if it completed successfully.
 

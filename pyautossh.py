@@ -139,7 +139,7 @@ def _find_ssh_executable() -> str:
 def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
     """
     Attempt an SSH connection and determine if it completed successfully.
-    
+
     Parameters
     ----------
     ssh_exec: str
@@ -150,8 +150,8 @@ def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
     Returns
     -------
     bool
-        True if SSH process completed with exit code 0, False if it's
-        still running or exited with an error.
+        True if SSH process completed with exit code 0, False if it is still
+        running or exited with an error.
     """
 
     # Time to wait for SSH process to terminate; if it doesn't, connection is considered active

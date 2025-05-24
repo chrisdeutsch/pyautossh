@@ -1,11 +1,10 @@
 import logging
 import shutil
-import subprocess
 from typing import Callable, Protocol
 
 from pyautossh.exceptions import SSHClientNotFound, SSHConnectionError
+from pyautossh.process_invoker import CommandResult, ProcessInvoker, SubprocessInvoker
 from pyautossh.retry_policy import RetryPolicy
-from pyautossh.process_invoker import ProcessInvoker, SubprocessInvoker, CommandResult
 
 logger = logging.getLogger(__name__)
 
@@ -168,7 +167,11 @@ class SSHSessionManager:
         """
         ssh_exec = self._find_ssh_executable()
 
-        retry_policy = RetryPolicy(max_attempts=max_connection_attempts, delay=reconnect_delay)
-        success = retry_policy.call(lambda: self._attempt_connection(ssh_exec, ssh_args))
+        retry_policy = RetryPolicy(
+            max_attempts=max_connection_attempts, delay=reconnect_delay
+        )
+        success = retry_policy.call(
+            lambda: self._attempt_connection(ssh_exec, ssh_args)
+        )
         if not success:
             raise SSHConnectionError("Exceeded maximum number of connection attempts")

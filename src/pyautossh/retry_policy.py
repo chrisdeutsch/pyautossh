@@ -1,6 +1,7 @@
 import time
 from typing import Callable
 
+
 class RetryPolicy:
     """
     Encapsulates retry logic with an initial delay and optional backoff.

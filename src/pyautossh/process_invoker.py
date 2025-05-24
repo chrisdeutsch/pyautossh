@@ -1,17 +1,20 @@
 import subprocess
-from typing import Protocol, List, Optional, NamedTuple
+from typing import List, NamedTuple, Optional, Protocol
+
 
 class CommandResult(NamedTuple):
     """
     Holds the result of a process invocation.
-    
+
     returncode
         The exit code if the process terminated within the timeout.
     timed_out
         True if the process is still running after the timeout.
     """
+
     returncode: Optional[int]
     timed_out: bool
+
 
 class ProcessInvoker(Protocol):
     """
@@ -35,6 +38,7 @@ class ProcessInvoker(Protocol):
             The result of the invocation.
         """
         ...
+
 
 class SubprocessInvoker:
     """

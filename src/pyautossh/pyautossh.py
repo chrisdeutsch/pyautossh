@@ -38,7 +38,7 @@ class SSHAutoConnector:
 
     @staticmethod
     def _attempt_connection(
-        ssh_exec: str, ssh_args: list[str], process_timeout_seconds: float = 30.0
+        ssh_exec: str, ssh_args: list[str], *, process_timeout_seconds: float = 30.0
     ) -> bool:
         """
         Attempt an SSH connection and determine if it completed successfully.

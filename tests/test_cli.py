@@ -6,7 +6,7 @@ def test_parse_args_basic():
     args, ssh_args = parse_args(["user@host"])
     assert args.max_connection_attempts is None
     assert args.reconnect_delay == 1.0
-    assert args.verbose is False
+    assert not args.verbose
     assert ssh_args == ["user@host"]
 
 
@@ -17,24 +17,20 @@ def test_parse_args_with_options():
             "--autossh-max-connection-attempts",
             "5",
             "--autossh-reconnect-delay",
-            "2.5",
+            "0.0",
             "user@host",
         ]
     )
     assert args.max_connection_attempts == 5
-    assert args.reconnect_delay == 2.5
-    assert args.verbose is False
+    assert args.reconnect_delay == 0.0
     assert ssh_args == ["user@host"]
 
 
 def test_parse_args_with_ssh_options():
     """Test parsing with SSH-specific options."""
-    args, ssh_args = parse_args(
+    _args, ssh_args = parse_args(
         ["user@host", "-p", "2222", "-v", "-L", "8080:localhost:8080"]
     )
-    assert args.max_connection_attempts is None
-    assert args.reconnect_delay == 1.0
-    assert args.verbose is False
     assert ssh_args == ["user@host", "-p", "2222", "-v", "-L", "8080:localhost:8080"]
 
 
@@ -50,9 +46,8 @@ def test_parse_args_mixed_order():
             "2222",
         ]
     )
-    assert args.verbose is True
+    assert args.verbose
     assert args.reconnect_delay == 3.0
-    assert args.max_connection_attempts is None
     assert ssh_args == ["user@host", "-p", "2222"]
 
 

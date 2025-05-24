@@ -8,15 +8,6 @@ from pyautossh.exceptions import SSHClientNotFound, SSHConnectionError
 logger = logging.getLogger(__name__)
 
 
-def setup_logging(verbose: bool = False) -> None:
-    """Sets up application-wide logging configuration."""
-
-    level = logging.INFO if not verbose else logging.DEBUG
-    logging.basicConfig(
-        level=level, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"
-    )
-
-
 def _find_ssh_executable() -> str:
     """
     Find the SSH executable on the PATH.

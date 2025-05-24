@@ -53,7 +53,7 @@ def test_parse_args_mixed_order():
     assert args.verbose is True
     assert args.reconnect_delay == 3.0
     assert args.max_connection_attempts is None
-    assert ssh_args == ["user@host", "--autossh-reconnect-delay", "3.0", "-p", "2222"]
+    assert ssh_args == ["user@host", "-p", "2222"]
 
 
 def test_parse_args_empty():

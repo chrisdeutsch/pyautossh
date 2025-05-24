@@ -62,6 +62,23 @@ Then simply connect using:
 pyautossh hostname-tmux
 ```
 
+### PyAutoSSH Options
+
+PyAutoSSH accepts several specific options that control its behavior:
+
+```bash
+# Set maximum connection attempts before giving up
+pyautossh --autossh-max-connection-attempts 10 user@hostname
+
+# Set delay between reconnection attempts (in seconds)
+pyautossh --autossh-reconnect-delay 5 user@hostname
+
+# Enable verbose logging for debugging
+pyautossh --autossh-verbose user@hostname
+```
+
+These options must be specified before any SSH arguments. All other arguments are passed directly to the SSH client.
+
 The parameters
 
 - `ServerAliveInterval`: Time interval (in seconds) for sending keep-alive

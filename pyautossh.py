@@ -47,6 +47,7 @@ def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[
 
     Options with '--autossh-' prefix are for pyautossh; all others go to SSH.
     """
+
     parser = argparse.ArgumentParser(
         description="Automatically reconnect SSH sessions when they disconnect"
     )

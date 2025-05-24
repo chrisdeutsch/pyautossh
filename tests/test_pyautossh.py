@@ -1,6 +1,8 @@
 import pytest
-from pyautossh.pyautossh import SSHSessionManager
+
 from pyautossh.exceptions import SSHConnectionError
+from pyautossh.pyautossh import SSHSessionManager
+
 
 # Helper class for testing
 class DummySSHSessionManager(SSHSessionManager):
@@ -12,7 +14,11 @@ class DummySSHSessionManager(SSHSessionManager):
         return self.fake_ssh_exec_path
 
     def _attempt_connection(
-        self, ssh_exec: str, ssh_args: list[str], *, process_timeout_seconds: float = 30.0
+        self,
+        ssh_exec: str,
+        ssh_args: list[str],
+        *,
+        process_timeout_seconds: float = 30.0,
     ) -> bool:
         if not self.attempt_outcomes_config:
             raise IndexError(
@@ -61,8 +67,12 @@ def test_connect_reaches_attempt_limit():
     # Configure dummy to always fail
     manager = DummySSHSessionManager(attempt_outcomes=[False] * max_attempts)
 
-    with pytest.raises(SSHConnectionError, match="Exceeded maximum number of connection attempts"):
-        manager.connect(ssh_args_test, max_connection_attempts=max_attempts, reconnect_delay=0.0)
+    with pytest.raises(
+        SSHConnectionError, match="Exceeded maximum number of connection attempts"
+    ):
+        manager.connect(
+            ssh_args_test, max_connection_attempts=max_attempts, reconnect_delay=0.0
+        )
 
     # We can assert that all outcomes were consumed, implying the correct number of attempts.
     assert not manager.attempt_outcomes_config

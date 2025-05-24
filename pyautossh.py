@@ -19,15 +19,15 @@ class SSHConnectionError(Exception):
 def main(argv: list[str] | None = None) -> int:
     """
     Entry point for the pyautossh application.
-    
+
     Parses command line arguments, sets up logging, and attempts to establish
     an SSH connection with automatic reconnection.
-    
+
     Parameters
     ----------
     argv : list[str] | None
         Command line arguments. If None, sys.argv[1:] is used.
-        
+
     Returns
     -------
     int

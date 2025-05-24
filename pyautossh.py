@@ -39,7 +39,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[str]]:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Automatically reconnect SSH sessions when they disconnect")
     parser.add_argument(
         "--autossh-max-connection-attempts",
         dest="max_connection_attempts",

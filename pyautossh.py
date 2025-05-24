@@ -99,7 +99,7 @@ def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
         True if connection was successful and terminated normally,
         False if connection failed or is still active
     """
-    process_timeout_seconds = 30.0
+    process_timeout_seconds = 30.0  # Time to wait for SSH process to terminate; if it doesn't, connection is considered active
     with subprocess.Popen([ssh_exec] + ssh_args) as ssh_proc:
         try:
             ssh_proc.wait(timeout=process_timeout_seconds)

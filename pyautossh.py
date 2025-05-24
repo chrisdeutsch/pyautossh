@@ -31,7 +31,7 @@ def main(argv: list[str] | None = None) -> int:
     Returns
     -------
     int
-        Exit code: 0 for success, 255 for errors
+        Exit code: 0 for success, any non-zero value indicates an error
     """
     args, ssh_args = parse_args(argv)
     setup_logging(verbose=args.verbose)

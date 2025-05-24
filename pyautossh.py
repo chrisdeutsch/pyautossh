@@ -56,9 +56,18 @@ def main(argv: list[str] | None = None) -> int:
 
 def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[str]]:
     """
-    Parse command line arguments.
+    Parse command line arguments, separating pyautossh options from SSH options.
 
-    Options with '--autossh-' prefix are for pyautossh; all others go to SSH.
+    Parameters
+    ----------
+    argv : list[str] | None
+        Command line arguments. If None, sys.argv[1:] is used.
+
+    Returns
+    -------
+    tuple
+        (pyautossh_args, ssh_args) where pyautossh_args contains the parsed arguments
+        for this application and ssh_args is a list of arguments to forward to SSH.
     """
 
     parser = argparse.ArgumentParser(
@@ -88,6 +97,14 @@ def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[
 
 
 def setup_logging(verbose: bool = False) -> None:
+    """
+    Configure logging based on verbosity level.
+
+    Parameters
+    ----------
+    verbose : bool
+        If True, sets logging level to DEBUG; otherwise INFO.
+    """
     level = logging.INFO if not verbose else logging.DEBUG
     logging.basicConfig(
         level=level, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"

@@ -39,7 +39,9 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[str]]:
-    parser = argparse.ArgumentParser(description="Automatically reconnect SSH sessions when they disconnect")
+    parser = argparse.ArgumentParser(
+        description="Automatically reconnect SSH sessions when they disconnect"
+    )
     parser.add_argument(
         "--autossh-max-connection-attempts",
         dest="max_connection_attempts",
@@ -48,15 +50,15 @@ def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[
         help="Maximum number of connection attempts before giving up (default: unlimited)",
     )
     parser.add_argument(
-        "--autossh-reconnect-delay", 
-        dest="reconnect_delay", 
-        type=float, 
+        "--autossh-reconnect-delay",
+        dest="reconnect_delay",
+        type=float,
         default=1.0,
         help="Delay in seconds between reconnection attempts (default: 1.0)",
     )
     parser.add_argument(
-        "--autossh-verbose", 
-        dest="verbose", 
+        "--autossh-verbose",
+        dest="verbose",
         action="store_true",
         help="Enable verbose logging output",
     )

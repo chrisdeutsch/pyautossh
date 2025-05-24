@@ -22,6 +22,7 @@ pyautossh = "pyautossh:main"
 [project.optional-dependencies]
 dev = [
     "mypy>=1.14.1",
+    "pytest>=8.3.5",
 ]
 
 [tool.ruff.lint]
@@ -31,8 +32,3 @@ extend-select = ["I"]
 strict = true
 exclude = ["tests"]
 
-[dependency-groups]
-dev = [
-    "mypy>=1.14.1",
-    "pytest>=8.3.5",
-]

@@ -42,6 +42,9 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[str]]:
+    """
+    Parse command line arguments for pyautossh.
+    """
     parser = argparse.ArgumentParser(
         description="Automatically reconnect SSH sessions when they disconnect"
     )

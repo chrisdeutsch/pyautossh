@@ -17,7 +17,7 @@ source = "vcs"
 raw-options = { version_scheme = "no-guess-dev" }
 
 [project.scripts]
-pyautossh = "pyautossh:main"
+pyautossh = "pyautossh.cli:main"
 
 [project.optional-dependencies]
 dev = [

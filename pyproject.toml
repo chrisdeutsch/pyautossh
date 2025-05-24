@@ -2,7 +2,7 @@
 name = "pyautossh"
 description = "Automatically reconnect SSH sessions"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dynamic = ["version"]
 license = "MIT"
 license-file = ["LICENSE"]

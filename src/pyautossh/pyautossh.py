@@ -37,7 +37,9 @@ class SSHAutoConnector:
         raise SSHClientNotFound("SSH client executable not found")
 
     @staticmethod
-    def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
+    def _attempt_connection(
+        ssh_exec: str, ssh_args: list[str], process_timeout_seconds: float = 30.0
+    ) -> bool:
         """
         Attempt an SSH connection and determine if it completed successfully.
 
@@ -47,6 +49,10 @@ class SSHAutoConnector:
             Path to the SSH executable
         ssh_args: list[str]
             Arguments forwarded to the SSH command
+        process_timeout_seconds: float
+            Time to wait for SSH process to terminate; if it doesn't,
+            the connection is considered active (not a terminal success).
+            Default is 30.0.
 
         Returns
         -------
@@ -55,8 +61,6 @@ class SSHAutoConnector:
             running or exited with an error.
         """
 
-        # Time to wait for SSH process to terminate; if it doesn't, connection is considered active
-        process_timeout_seconds = 30.0
         with subprocess.Popen([ssh_exec] + ssh_args) as ssh_proc:
             try:
                 ssh_proc.wait(timeout=process_timeout_seconds)

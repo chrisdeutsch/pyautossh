@@ -2,38 +2,108 @@ import logging
 import shutil
 import subprocess
 import time
+from typing import Callable
 
 from pyautossh.exceptions import SSHClientNotFound, SSHConnectionError
 
 logger = logging.getLogger(__name__)
 
 
+# Default implementation for finding SSH executable
+def default_find_ssh_executable() -> str:
+    """
+    Find the SSH executable on the PATH.
+
+    Returns
+    -------
+    str
+        Path to the SSH executable
+
+    Raises
+    ------
+    SSHClientNotFound
+        If the SSH executable is not found in the PATH
+    """
+    ssh_exec = shutil.which("ssh")
+    if ssh_exec:
+        logger.debug(f"ssh executable found via PATH: {ssh_exec}")
+        return ssh_exec
+    raise SSHClientNotFound("SSH client executable not found")
+
+# Default implementation for attempting an SSH connection
+def default_attempt_connection(
+    ssh_exec: str,
+    ssh_args: list[str],
+    *,
+    process_timeout_seconds: float = 30.0,
+) -> bool:
+    """
+    Attempt an SSH connection using subprocess and determine if it completed successfully.
+
+    Parameters
+    ----------
+    ssh_exec: str
+        Path to the SSH executable
+    ssh_args: list[str]
+        Arguments forwarded to the SSH command
+    process_timeout_seconds: float
+        Time to wait for SSH process to terminate; if it doesn't,
+        the connection is considered active (not a terminal success).
+        Default is 30.0.
+
+    Returns
+    -------
+    bool
+        True if SSH process completed with exit code 0, False if it is still
+        running or exited with an error.
+    """
+    with subprocess.Popen([ssh_exec] + ssh_args) as ssh_proc:
+        try:
+            ssh_proc.wait(timeout=process_timeout_seconds)
+        except subprocess.TimeoutExpired:
+            # Connection is still active. Not a terminal success.
+            return False
+
+    if ssh_proc.returncode == 0:
+        return True
+
+    logger.debug(f"ssh exited with code {ssh_proc.returncode}")
+    return False
+
+
 class SSHSessionManager:
     """
     Manages an SSH connection with automatic reconnection capabilities.
+    Relies on injected functions for finding the SSH executable and attempting connections.
     """
+
+    def __init__(
+        self,
+        ssh_finder: Callable[[], str] = default_find_ssh_executable,
+        connection_attempter: Callable[[str, list[str], float], bool] = default_attempt_connection,
+    ):
+        """
+        Initializes the SSHSessionManager.
+
+        Parameters
+        ----------
+        ssh_finder : Callable[[], str], optional
+            A function that returns the path to the SSH executable.
+            Defaults to `default_find_ssh_executable`.
+        connection_attempter : Callable[[str, list[str], float], bool], optional
+            A function that attempts an SSH connection.
+            It should take (ssh_exec_path, ssh_args, process_timeout_seconds)
+            and return True for a successful terminal connection, False otherwise.
+            Defaults to `default_attempt_connection`.
+        """
+        self._find_ssh_executable_func = ssh_finder
+        self._attempt_connection_func = connection_attempter
 
     def _find_ssh_executable(self) -> str:
         """
-        Find the SSH executable on the PATH.
-
-        Returns
-        -------
-        str
-            Path to the SSH executable
-
-        Raises
-        ------
-        SSHClientNotFound
-            If the SSH executable is not found in the PATH
+        Find the SSH executable using the injected finder function.
         """
-
-        ssh_exec = shutil.which("ssh")
-        if ssh_exec:
-            logger.debug(f"ssh executable: {ssh_exec}")
-            return ssh_exec
-
-        raise SSHClientNotFound("SSH client executable not found")
+        return self._find_ssh_executable_func()
 
     def _attempt_connection(
         self,
@@ -43,38 +113,11 @@ class SSHSessionManager:
         process_timeout_seconds: float = 30.0,
     ) -> bool:
         """
-        Attempt an SSH connection and determine if it completed successfully.
-
-        Parameters
-        ----------
-        ssh_exec: str
-            Path to the SSH executable
-        ssh_args: list[str]
-            Arguments forwarded to the SSH command
-        process_timeout_seconds: float
-            Time to wait for SSH process to terminate; if it doesn't,
-            the connection is considered active (not a terminal success).
-            Default is 30.0.
-
-        Returns
-        -------
-        bool
-            True if SSH process completed with exit code 0, False if it is still
-            running or exited with an error.
+        Attempt an SSH connection using the injected attempter function.
         """
-
-        with subprocess.Popen([ssh_exec] + ssh_args) as ssh_proc:
-            try:
-                ssh_proc.wait(timeout=process_timeout_seconds)
-            except subprocess.TimeoutExpired:
-                # Connection is still active. Not a terminal success.
-                return False
-
-        if ssh_proc.returncode == 0:
-            return True
-
-        logger.debug(f"ssh exited with code {ssh_proc.returncode}")
-        return False
+        return self._attempt_connection_func(
+            ssh_exec, ssh_args, process_timeout_seconds=process_timeout_seconds
+        )
 
     def connect(
         self,

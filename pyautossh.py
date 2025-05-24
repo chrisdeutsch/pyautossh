@@ -98,14 +98,7 @@ def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[
 
 
 def setup_logging(verbose: bool = False) -> None:
-    """
-    Configure logging based on verbosity level.
-
-    Parameters
-    ----------
-    verbose: bool
-        If True, sets logging level to DEBUG; otherwise INFO.
-    """
+    """Sets up application-wide logging configuration."""
 
     level = logging.INFO if not verbose else logging.DEBUG
     logging.basicConfig(

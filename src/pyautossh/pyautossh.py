@@ -1,100 +1,13 @@
-import argparse
 import logging
 import shutil
 import subprocess
 import sys
 import time
 
+from pyautossh.cli import main
+from pyautossh.exceptions import SSHClientNotFound, SSHConnectionError
+
 logger = logging.getLogger(__name__)
-
-
-class SSHClientNotFound(Exception):
-    pass
-
-
-class SSHConnectionError(Exception):
-    pass
-
-
-def main(argv: list[str] | None = None) -> int:
-    """
-    Entry point for the pyautossh application.
-
-    Parses command line arguments, sets up logging, and attempts to establish
-    an SSH connection with automatic reconnection.
-
-    Parameters
-    ----------
-    argv: list[str] | None
-        Command line arguments. If None, sys.argv[1:] is used.
-
-    Returns
-    -------
-    int
-        Exit code: 0 for success, any non-zero value indicates an error
-    """
-
-    args, ssh_args = parse_args(argv)
-    setup_logging(verbose=args.verbose)
-
-    try:
-        connect_ssh(
-            ssh_args,
-            max_connection_attempts=args.max_connection_attempts,
-            reconnect_delay=args.reconnect_delay,
-        )
-    except (SSHClientNotFound, SSHConnectionError) as exce:
-        logger.error(str(exce))
-        return 255
-    except KeyboardInterrupt:
-        return 255
-    except BaseException:
-        logger.exception("Encountered unhandled exception")
-        return 255
-
-    return 0
-
-
-def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[str]]:
-    """
-    Parse command line arguments, separating pyautossh options from SSH options.
-
-    Parameters
-    ----------
-    argv: list[str] | None
-        Command line arguments. If None, sys.argv[1:] is used.
-
-    Returns
-    -------
-    tuple
-        (pyautossh_args, ssh_args) where pyautossh_args contains the parsed arguments
-        for this application and ssh_args is a list of arguments to forward to SSH.
-    """
-
-    parser = argparse.ArgumentParser(
-        description="Automatically reconnect SSH sessions when they disconnect"
-    )
-    parser.add_argument(
-        "--autossh-max-connection-attempts",
-        dest="max_connection_attempts",
-        type=int,
-        default=None,
-        help="Maximum number of connection attempts before giving up (default: unlimited)",
-    )
-    parser.add_argument(
-        "--autossh-reconnect-delay",
-        dest="reconnect_delay",
-        type=float,
-        default=1.0,
-        help="Delay in seconds between reconnection attempts (default: 1.0)",
-    )
-    parser.add_argument(
-        "--autossh-verbose",
-        dest="verbose",
-        action="store_true",
-        help="Enable verbose logging output",
-    )
-    return parser.parse_known_args(argv)
 
 
 def setup_logging(verbose: bool = False) -> None:

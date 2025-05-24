@@ -1,10 +1,8 @@
 import logging
 import shutil
 import subprocess
-import sys
 import time
 
-from pyautossh.cli import main
 from pyautossh.exceptions import SSHClientNotFound, SSHConnectionError
 
 logger = logging.getLogger(__name__)
@@ -116,7 +114,3 @@ def connect_ssh(
         logger.debug("Reconnecting...")
 
     raise SSHConnectionError("Exceeded maximum number of connection attempts")
-
-
-if __name__ == "__main__":
-    sys.exit(main())

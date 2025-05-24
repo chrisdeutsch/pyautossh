@@ -29,7 +29,30 @@ def main(argv: list[str] | None = None) -> int:
     setup_logging(verbose=args.verbose)
 
     if not ssh_args:
-        logger.error("No SSH arguments provided. Usage: pyautossh [options] [ssh_args]")
+        parser = argparse.ArgumentParser(
+            description="Automatically reconnect SSH sessions when they disconnect"
+        )
+        parser.add_argument(
+            "--autossh-max-connection-attempts",
+            dest="max_connection_attempts",
+            type=int,
+            default=None,
+            help="Maximum number of connection attempts before giving up (default: unlimited)",
+        )
+        parser.add_argument(
+            "--autossh-reconnect-delay",
+            dest="reconnect_delay",
+            type=float,
+            default=1.0,
+            help="Delay in seconds between reconnection attempts (default: 1.0)",
+        )
+        parser.add_argument(
+            "--autossh-verbose",
+            dest="verbose",
+            action="store_true",
+            help="Enable verbose logging output",
+        )
+        parser.print_help()
         return 255
 
     try:
@@ -50,22 +73,15 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
-def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[str]]:
+def create_parser() -> argparse.ArgumentParser:
     """
-    Parse command line arguments, separating pyautossh options from SSH options.
-
-    Parameters
-    ----------
-    argv: list[str] | None
-        Command line arguments. If None, sys.argv[1:] is used.
+    Create the argument parser for pyautossh.
 
     Returns
     -------
-    tuple
-        (pyautossh_args, ssh_args) where pyautossh_args contains the parsed arguments
-        for this application and ssh_args is a list of arguments to forward to SSH.
+    argparse.ArgumentParser
+        The configured argument parser
     """
-
     parser = argparse.ArgumentParser(
         description="Automatically reconnect SSH sessions when they disconnect"
     )
@@ -89,6 +105,25 @@ def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[
         action="store_true",
         help="Enable verbose logging output",
     )
+    return parser
+
+
+def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[str]]:
+    """
+    Parse command line arguments, separating pyautossh options from SSH options.
+
+    Parameters
+    ----------
+    argv: list[str] | None
+        Command line arguments. If None, sys.argv[1:] is used.
+
+    Returns
+    -------
+    tuple
+        (pyautossh_args, ssh_args) where pyautossh_args contains the parsed arguments
+        for this application and ssh_args is a list of arguments to forward to SSH.
+    """
+    parser = create_parser()
     return parser.parse_known_args(argv)
 
 

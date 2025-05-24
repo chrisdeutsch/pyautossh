@@ -46,7 +46,7 @@ def test_connect_fail_then_succeed():
 
     # max_connection_attempts needs to be >= 3 for this test
     # The connect call itself is the main assertion here, if it doesn't raise, it's a pass.
-    manager.connect(ssh_args_test, max_connection_attempts=5, reconnect_delay=0.001)
+    manager.connect(ssh_args_test, max_connection_attempts=5, reconnect_delay=0.0)
 
     # We can assert that all outcomes were consumed, implying the correct number of attempts.
     assert not manager.attempt_outcomes_config
@@ -62,7 +62,7 @@ def test_connect_reaches_attempt_limit():
     manager = DummySSHSessionManager(attempt_outcomes=[False] * max_attempts)
 
     with pytest.raises(SSHConnectionError, match="Exceeded maximum number of connection attempts"):
-        manager.connect(ssh_args_test, max_connection_attempts=max_attempts, reconnect_delay=0.001)
+        manager.connect(ssh_args_test, max_connection_attempts=max_attempts, reconnect_delay=0.0)
 
     # We can assert that all outcomes were consumed, implying the correct number of attempts.
     assert not manager.attempt_outcomes_config

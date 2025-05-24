@@ -23,6 +23,7 @@ pyautossh = "pyautossh.cli:main"
 dev = [
     "mypy>=1.14.1",
     "pytest>=8.3.5",
+    "coverage>=7.8.2",
 ]
 
 [tool.ruff.lint]

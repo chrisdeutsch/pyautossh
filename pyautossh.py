@@ -17,6 +17,9 @@ class SSHConnectionError(Exception):
 
 
 def main(argv: list[str] | None = None) -> int:
+    """
+    Entry point for the pyautossh application.
+    """
     args, ssh_args = parse_args(argv)
     setup_logging(verbose=args.verbose)
 

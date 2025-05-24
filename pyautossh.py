@@ -74,6 +74,7 @@ def _find_ssh_executable() -> str:
     SSHClientNotFound
         If the SSH executable is not found in the PATH
     """
+
     ssh_exec = shutil.which("ssh")
     if ssh_exec:
         logger.debug(f"ssh executable: {ssh_exec}")
@@ -99,7 +100,9 @@ def _attempt_connection(ssh_exec: str, ssh_args: list[str]) -> bool:
         True if connection was successful and terminated normally,
         False if connection failed or is still active
     """
-    process_timeout_seconds = 30.0  # Time to wait for SSH process to terminate; if it doesn't, connection is considered active
+
+    # Time to wait for SSH process to terminate; if it doesn't, connection is considered active
+    process_timeout_seconds = 30.0
     with subprocess.Popen([ssh_exec] + ssh_args) as ssh_proc:
         try:
             ssh_proc.wait(timeout=process_timeout_seconds)
@@ -139,6 +142,7 @@ def connect_ssh(
     SSHClientNotFound
         If the SSH executable is not found
     """
+
     ssh_exec = _find_ssh_executable()
 
     num_attempt = 0

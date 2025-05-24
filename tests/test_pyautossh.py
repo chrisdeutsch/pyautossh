@@ -63,23 +63,8 @@ def test_connect_successful_first_attempt():
     )
 
     manager.connect(ssh_args_test, max_connection_attempts=3, reconnect_delay=0.0)
-    # Check the list that was actually mutated by the mock attempter.
-    # The mock_attempter's closure holds 'outcomes_mut', which was initialized from 'attempt_outcomes'.
-    # To check if it was consumed, we need to inspect the list inside the closure,
-    # or rely on the IndexError if too many calls are made.
-    # A simple way to test consumption for this specific test is to check if the original list is now empty
-    # (assuming the mock function pops from the list it was given).
-    # However, the current make_mock_attempt_connection creates a *copy*.
-    # So, we can't directly assert on `attempt_outcomes` being empty.
-    # Instead, we rely on the IndexError not being raised and the test passing as implicit success.
-    # For a more direct assertion, the mock would need to modify the list in-place or return its state.
-    # For now, the absence of an exception and the test logic implies one successful call.
-    # To make this assertable, we'd need to change how `make_mock_attempt_connection` handles the list.
-    # Let's assume for now the test structure implies the correct number of calls if no error.
-    # A better way: the factory can return the mutable list it uses.
-    # For this iteration, let's stick to the current mock design and rely on IndexError for too many calls.
-    # The test passes if `connect` returns without error.
-    pass  # Implicitly, one call was made and it was True.
+    # If connect completes without error, and the mock attempter had True as the outcome,
+    # it implies one successful call was made.
 
 
 def test_connect_fail_then_succeed():
@@ -96,8 +81,7 @@ def test_connect_fail_then_succeed():
     )
 
     manager.connect(ssh_args_test, max_connection_attempts=5, reconnect_delay=0.0)
-    # Similar to the above, successful completion implies the outcomes were consumed as expected.
-    pass
+    # Successful completion implies the outcomes were consumed as expected.
 
 
 def test_connect_reaches_attempt_limit():
@@ -120,5 +104,3 @@ def test_connect_reaches_attempt_limit():
         manager.connect(
             ssh_args_test, max_connection_attempts=max_attempts, reconnect_delay=0.0
         )
-    # If the test reaches here, it means the expected number of False outcomes were consumed.
-    pass

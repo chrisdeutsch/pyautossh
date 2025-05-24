@@ -29,30 +29,7 @@ def main(argv: list[str] | None = None) -> int:
     setup_logging(verbose=args.verbose)
 
     if not ssh_args:
-        parser = argparse.ArgumentParser(
-            description="Automatically reconnect SSH sessions when they disconnect"
-        )
-        parser.add_argument(
-            "--autossh-max-connection-attempts",
-            dest="max_connection_attempts",
-            type=int,
-            default=None,
-            help="Maximum number of connection attempts before giving up (default: unlimited)",
-        )
-        parser.add_argument(
-            "--autossh-reconnect-delay",
-            dest="reconnect_delay",
-            type=float,
-            default=1.0,
-            help="Delay in seconds between reconnection attempts (default: 1.0)",
-        )
-        parser.add_argument(
-            "--autossh-verbose",
-            dest="verbose",
-            action="store_true",
-            help="Enable verbose logging output",
-        )
-        parser.print_help()
+        create_parser().print_help()
         return 255
 
     try:

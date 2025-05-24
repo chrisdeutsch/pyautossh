@@ -31,4 +31,4 @@ jobs:
         pip install .[dev]
     - name: Run mypy
       run: |
-        mypy --strict pyautossh.py
+        mypy --strict .
